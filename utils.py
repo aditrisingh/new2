@@ -39,7 +39,8 @@ def load_llm():
     """
     Load the LLM
     """
-    repo_id = 'meta-llama/Llama-2-7b-chat-hf'  # Use a smaller model if needed
+    # repo_id = 'meta-llama/Llama-2-7b-chat-hf'
+    repo_id = 'gpt2'  # Use a smaller model if needed
 
     model = AutoModelForCausalLM.from_pretrained(
         repo_id,
@@ -54,7 +55,8 @@ def load_llm():
         'text-generation',
         model=model,
         tokenizer=tokenizer,
-        max_length=256,  # Reduce memory usage
+        # max_length=256,  # Reduce memory usage
+        max_new_tokens=100, # Generate up to 100 new tokens
         temperature=0.3,  # More deterministic responses
         do_sample=False
     )
@@ -78,7 +80,7 @@ def qa_pipeline():
     Create the QA pipeline
     """
     embeddings = HuggingFaceEmbeddings()
-    db = FAISS.load_local(FAISS_INDEX, embeddings)
+    db = FAISS.load_local(FAISS_INDEX, embeddings, allow_dangerous_deserialization=True)
 
     llm = load_llm()
     qa_prompt = set_custom_prompt_template()
